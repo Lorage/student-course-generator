@@ -1,0 +1,38 @@
+{
+  "name": "student-course-generator",
+  "version": "1.0.0",
+  "description": "Generator for common core course work.",
+  "main": "index.js",
+  "scripts": {
+    "test": "cross-env NODE_ENV=testing mocha --compilers js:babel-register",
+    "copy": "rm -rf dist && mkdir dist && cp src/index.html dist/index.html",
+    "build": "npm run copy && cross-env NODE_ENV='production' webpack",
+    "build-dev": "npm run copy && webpack --watch --colors --progress",
+    "serve-local": "http-server ./dist",
+    "serve-prod": "node server.js"
+  },
+  "author": "Lorage",
+  "license": "ISC",
+  "dependencies": {
+    "babel-polyfill": "^6.23.0",
+    "filesaver.js": "^0.2.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "compression": "^1.7.0",
+    "cross-env": "^5.0.0",
+    "css-loader": "^0.28.4",
+    "express": "^4.15.3",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "http-server": "^0.10.0",
+    "mocha": "^3.5.0",
+    "style-loader": "^0.18.2",
+    "transform-runtime": "0.0.0",
+    "webpack": "^2.6.1"
+  }
+}
