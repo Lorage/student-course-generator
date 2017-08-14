@@ -151,6 +151,7 @@ class LearningPaths {
         return allRows.join('\n');
     }
 
+    // Start under construction
     composeRow(row, studentHeader) {
         var rowArray = [];
         var differentials = {};
@@ -213,6 +214,7 @@ class LearningPaths {
 
         return rowArray.join(",");
     }
+    // End under construction
 
     createScoreMap(maxLevels, useDomainData) {
         if (useDomainData) {
