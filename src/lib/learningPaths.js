@@ -1,6 +1,5 @@
 var saveAs;
 if (process.env.NODE_ENV !== "testing") {
-    console.log(process.env.NODE_ENV);
     saveAs = require('filesaver.js');
 }
 
@@ -172,10 +171,6 @@ class LearningPaths {
             rowArray.push(row[i]);
         }
 
-/*         console.log("=========================");
-        console.log("ROW", row);
-        console.log("DIFFS", differentials); */
-
         // Iterates to 5 to ensure 5 courses
         for (var i = 0; i < 5; i++) {
             var currentDiff = {
@@ -194,11 +189,8 @@ class LearningPaths {
                             domain: item
                         };
                     } else break;
-                    console.log(prosDiff, differentials[item], differentials);
                 }
             });
-
-            // if all differentials are === 0
 
             // Check both old scores and new scores
             var currentCourse = row.scores.find((item) => {
