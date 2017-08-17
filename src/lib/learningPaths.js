@@ -1,6 +1,6 @@
 var saveAs;
 if (process.env.NODE_ENV !== "testing") {
-    saveAs = require('filesaver.js');
+    saveAs = require('filesaver.js').saveAs;
 }
 
 // Learning Paths library
@@ -137,7 +137,7 @@ class LearningPaths {
 
         return resultDictionary;
     }
-
+ 
     buildResultString() {
         var allRows = [];
 
@@ -152,8 +152,10 @@ class LearningPaths {
     }
 
     // Start under construction
-    composeRow(row, studentHeader) {
+    composeRow(rowArg, studentHeader) {
+        var row = Object.assign({}, rowArg);
         var rowArray = [];
+        var objectArray = [];
         var differentials = {};
         var sortedRow = row.scores.sort((a, b) => {
             return a.scoreInt - b.scoreInt;
@@ -161,6 +163,7 @@ class LearningPaths {
         var lastElementIndex = this.parsedData.domainData.length - 1;
         var domainMaxLevel = parseInt(this.parsedData.domainData[lastElementIndex][0]);
         var highestStudentLevel = sortedRow[sortedRow.length - 1].scoreInt;
+        var diffArray = this.createDiffArray(domainMaxLevel);
 
         // Create differentials object
         sortedRow.forEach(function(score, index) {
@@ -168,17 +171,51 @@ class LearningPaths {
         });
 
         // Push student name
-        if (i === 0) {
-            rowArray.push(row[i]);
-        }
+        if (rowArray.length === 0) {
+            rowArray.push(row.name);
+        } 
 
         // Iterates to 5 to ensure 5 courses
         for (var i = 0; i < 5; i++) {
             var currentDiff = {
                 diff: 0
             };
+/*             if (row.length === 1) {
+                var diffs = row.scores.filter((score) => {
+                    var diff = differentials[score.domain];
+                    if (diff > 1) return score;
+                });
 
-            [5, 4, 3, 2, 1, 0].forEach((prosDiff) => {
+                if (diffs.length > 0) {
+                    diffs.forEach((diff) => {
+                        console.log(diff);
+                    });
+                }
+            } */
+
+            // After first score, check for scores of the same score and 
+/*             if (objectArray.length > 0) {
+                var lastElement = objectArray[objectArray.length - 1];
+                var array = row.scores.filter((score) => {
+                    if (score.scoreInt === lastElement.scoreInt) {
+                        return score;
+                    }
+                });
+
+                if (array.length > 0) {
+                    console.log("array", array);
+                    array.sort((scoreA, scoreB) => {
+                        return this.scoreMap[scoreA.scoreString].indexOf(scoreA.domain) - this.scoreMap[scoreB.scoreString].indexOf(scoreB.domain);
+                    });
+                }
+            } */
+
+            var newSort = row.scores.sort((scoreA, scoreB) => {
+                return differentials[scoreA.domain] - differentials[scoreB.domain];
+            });
+
+            //Generate the diff array instead, based on max
+            diffArray.forEach((prosDiff) => {
                 for (var item in differentials) {
                     var existCheck = row.scores.find((score) => {
                         if (score.domain === item) return true;
@@ -199,22 +236,37 @@ class LearningPaths {
             });
 
             // Push new value
-            rowArray.push(`${currentCourse.scoreString}.${currentCourse.domain}`);
+            if (currentCourse) rowArray.push(`${currentCourse.scoreString}.${currentCourse.domain}`);
 
             // Decrement diff & increment row score
-            if (differentials[currentCourse.domain] !== 0) differentials[currentCourse.domain]--;
+            if (differentials[currentCourse.domain] >= 0) differentials[currentCourse.domain]--;
             row.scores.forEach((element, index) => {
                 if ((element.domain === currentDiff.domain) && row.scores[index].scoreInt !== domainMaxLevel) {
                     row.scores[index].scoreInt++;
                     if (currentCourse.scoreString === "K") row.scores[index].scoreString = "1";
-                    else row.scores[index].scoreString = String(row.scores[index].scoreInt++);
+                    else row.scores[index].scoreString = String(row.scores[index].scoreInt);
                 }
             });
         }
 
+        // Option: only push score object instead of string, then sort before creating the string array
+
+        objectArray.forEach((currentCourse) => {
+            rowArray.push(`${currentCourse.scoreString}.${currentCourse.domain}`);
+        });
+
         return rowArray.join(",");
     }
     // End under construction
+
+    createDiffArray(domainMaxLevel) {
+        var diffArray = [];
+        while(domainMaxLevel--) {
+            diffArray.push(domainMaxLevel);
+        }
+
+        return diffArray;
+    }
 
     createScoreMap(maxLevels, useDomainData) {
         if (useDomainData) {
