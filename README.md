@@ -1,10 +1,10 @@
 # Student Course Generator
 
 ### Install & run
-1. Run git clone
-2. npm install
-3. npm run build-dev
-4. npm run serve-local
+1. Run `git clone`
+2. `npm install`
+3. `npm run build-dev`
+4. In a second terminal: `npm run serve-local`
 
 ### Use
 So far, the only code you need to start are these lines, passing the button ID, domain file input ID, and student file input ID.
@@ -35,6 +35,13 @@ LearningPaths.registerHandlers('createPath', 'domainUpload', 'studentsUpload');
 ```
 
 This creates the click and onload handlers which fire when appropriate, including the file saving mechanics.
+
+### Explanation
+
+1. The code takes the two CSVs (domain order and student scores), slices them into arrays an objects, and then uses those to run through the test generation.
+2. After registering the load handlers, each row is put through `composeRow()` and has its scores sorted.
+3. The heuristic uses the difference between that score and the highest test score to determine the order/importance.
+There is one shortcoming here, which is that there is no checking to see if that specific score/domain entry exists, so in some cases, you will see 2.L, 5.RF, etc.
 
 ### TODO
 1. Write methods that allow for tests to run & write tests
