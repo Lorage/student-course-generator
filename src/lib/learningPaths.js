@@ -20,8 +20,6 @@ class LearningPaths {
             studentData: null,
         };
         this.domainDictionary = {};
-
-        this.parseStudentData = this.parseStudentData.bind(this);
     }
 
     // Main method
@@ -34,6 +32,8 @@ class LearningPaths {
         // Built result and trigger file save
         var result = this.buildResultString();
         this.saveFile(result);
+
+        return result;
     }
 
     // Helpers
@@ -41,7 +41,10 @@ class LearningPaths {
         // Add button click
         var createPath = document.getElementById(buttonId);
         createPath.addEventListener('click', () => {
-            this.getLearningPaths();
+            var paths = this.getLearningPaths();
+            if (paths.message) {
+                window.alert(paths.message);
+            }
         });
 
         // Add domain file input onchange listener to change current data
@@ -71,8 +74,10 @@ class LearningPaths {
                 if (element.dataType === "domainData") {
                     this.parsedData[element.dataType] = this.parseByLine(text);
                     this.domainDictionary = this.parseIntoDictionary(text);
+                } else {
+                    this.parsedData[element.dataType] = this.parseStudentData(text);
+                    this.backupData = this.parseStudentData(text);
                 }
-                else this.parsedData[element.dataType] = this.parseStudentData(text);
             };
 
             // Create file read trigger
@@ -90,7 +95,6 @@ class LearningPaths {
         var studentArray = [];
         var baseStudentArray = this.parseByLine(text);
         var lineArray = text.split("\n");
-        
         lineArray.forEach((item, index) => {
             var splitString = item.split(",");
             var scores = splitString.slice(1);
@@ -140,19 +144,19 @@ class LearningPaths {
  
     buildResultString() {
         var allRows = [];
-
         // Create reference to domain headers in the form of:
         var studentHeader = this.parsedData.studentData[0];
         this.parsedData.studentData.forEach((item, index) => {
             allRows.push(this.composeRow(item, studentHeader));
         });
+        this.parsedData.studentData = this.backupData.slice();
         
         return allRows.join('\n');
     }
 
     // Start under construction
     composeRow(rowArg, studentHeader) {
-        var row = Object.assign({}, rowArg);
+        var row = JSON.parse(JSON.stringify(rowArg));
         var rowArray = [];
         var differentials = {};
 
@@ -197,22 +201,24 @@ class LearningPaths {
                     } else break;
                 }
             });
-
+            
             // Check both old scores and new scores
             var currentCourse = row.scores.find((item) => {
                 if (item.domain === currentDiff.domain) return item;
             });
 
             // Push new value
-            if (currentCourse) rowArray.push(`${currentCourse.scoreString}.${currentCourse.domain}`);
+            if (!currentCourse) return;
+
+            rowArray.push(`${currentCourse.scoreString}.${currentCourse.domain}`);
 
             // Decrement diff & increment row score
             if (differentials[currentCourse.domain] >= 0) differentials[currentCourse.domain]--;
             row.scores.forEach((element, index) => {
-                if ((element.domain === currentDiff.domain) && row.scores[index].scoreInt !== domainMaxLevel) {
-                    row.scores[index].scoreInt++;
-                    if (currentCourse.scoreString === "K") row.scores[index].scoreString = "1";
-                    else row.scores[index].scoreString = String(row.scores[index].scoreInt);
+                if ((element.domain === currentDiff.domain) && element.scoreInt !== domainMaxLevel) {
+                    element.scoreInt++;
+                    if (currentCourse.scoreString === "K") element.scoreString = "1";
+                    else element.scoreString = String(element.scoreInt);
                 }
             });
         }
@@ -222,7 +228,7 @@ class LearningPaths {
 
     createDiffArray(domainMaxLevel) {
         var diffArray = [];
-        while(domainMaxLevel--) {
+        while (domainMaxLevel--) {
             diffArray.push(domainMaxLevel);
         }
 
