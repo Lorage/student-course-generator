@@ -74,10 +74,7 @@ class LearningPaths {
                 if (element.dataType === "domainData") {
                     this.parsedData[element.dataType] = this.parseByLine(text);
                     this.domainDictionary = this.parseIntoDictionary(text);
-                } else {
-                    this.parsedData[element.dataType] = this.parseStudentData(text);
-                    this.backupData = this.parseStudentData(text);
-                }
+                } else this.parsedData[element.dataType] = this.parseStudentData(text);
             };
 
             // Create file read trigger
@@ -149,7 +146,6 @@ class LearningPaths {
         this.parsedData.studentData.forEach((item, index) => {
             allRows.push(this.composeRow(item, studentHeader));
         });
-        this.parsedData.studentData = this.backupData.slice();
         
         return allRows.join('\n');
     }
@@ -208,19 +204,35 @@ class LearningPaths {
             });
 
             // Push new value
+            // TODO: Add domain/score checking to make sure currentCourse.domain exists on score level
             if (!currentCourse) return;
-
             rowArray.push(`${currentCourse.scoreString}.${currentCourse.domain}`);
 
             // Decrement diff & increment row score
-            if (differentials[currentCourse.domain] >= 0) differentials[currentCourse.domain]--;
-            row.scores.forEach((element, index) => {
-                if ((element.domain === currentDiff.domain) && element.scoreInt !== domainMaxLevel) {
-                    element.scoreInt++;
-                    if (currentCourse.scoreString === "K") element.scoreString = "1";
-                    else element.scoreString = String(element.scoreInt);
-                }
+            if (differentials[currentCourse.domain] >= 1) differentials[currentCourse.domain]--;
+            var newRow = row.scores.find((score)=>{
+                if ((score.domain === currentDiff.domain) && score.scoreInt !== domainMaxLevel) return score;
             });
+
+            if (newRow) {
+                // Appropriately set next iteration/domain
+                var newScore = newRow.scoreInt;
+
+                if (newRow.scoreString === "0") newRow.scoreString = "K";
+                for (var int = newScore; int < domainMaxLevel; ++int) {
+                    var check = this.parsedData.domainData[int].includes(newRow.domain);
+                    if (check) {
+                        int++;
+                        newRow.scoreInt = int;
+                        break;
+                    }
+                }
+
+                //if (currentCourse.scoreString === "0") newRow.scoreString = "K";
+                if (newRow.scoreString === "K") newRow.scoreString = "1";
+                else newRow.scoreString = String(newRow.scoreInt);
+            }
+            
         }
 
         return rowArray.join(",");
