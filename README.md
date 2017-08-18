@@ -5,9 +5,10 @@
 2. `npm install`
 3. `npm run build-dev`
 4. In a second terminal: `npm run serve-local`
+5. Some packages might need to be installed globally, but it should be obvious if that is the case. NPM will tell you what command isn't recognized or which NPM script failed.
 
 ### Use
-So far, the only code you need to start are these lines, passing the button ID, domain file input ID, and student file input ID.
+So far, the only code you need to start are these lines: passing the button ID, domain file input ID, and student file input ID.
 
 #### JS
 ```
@@ -47,6 +48,7 @@ This creates the click and onload handlers which fire when appropriate, includin
 The two main issues are as follows:
 1. There is no checking to see if that specific score/domain entry exists, so in some cases, you will see 2.L, 5.RF, etc.
 2. There is no domain-score order within score sets so far, due to how checking is done for score.
+3. 5 courses are required. The lack of score/domain checking means that scores may repeat if a student is maxed on all domains.
 
 ### TODO
 1. Write methods that allow for tests to run & write tests
