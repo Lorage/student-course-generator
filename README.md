@@ -41,7 +41,12 @@ This creates the click and onload handlers which fire when appropriate, includin
 1. The code takes the two CSVs (domain order and student scores), slices them into arrays an objects, and then uses those to run through the test generation.
 2. After registering the load handlers, each row is put through `composeRow()` and has its scores sorted.
 3. The heuristic uses the difference between that score and the highest test score to determine the order/importance.
-There is one shortcoming here, which is that there is no checking to see if that specific score/domain entry exists, so in some cases, you will see 2.L, 5.RF, etc.
+
+
+### Algorithm Issues/TODO
+The two main issues are as follows:
+1. There is no checking to see if that specific score/domain entry exists, so in some cases, you will see 2.L, 5.RF, etc.
+2. There is no domain-score order within score sets so far, due to how checking is done for score.
 
 ### TODO
 1. Write methods that allow for tests to run & write tests
