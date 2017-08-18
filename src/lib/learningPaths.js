@@ -141,7 +141,6 @@ class LearningPaths {
  
     buildResultString() {
         var allRows = [];
-        // Create reference to domain headers in the form of:
         var studentHeader = this.parsedData.studentData[0];
         this.parsedData.studentData.forEach((item, index) => {
             allRows.push(this.composeRow(item, studentHeader));
@@ -228,11 +227,9 @@ class LearningPaths {
                     }
                 }
 
-                //if (currentCourse.scoreString === "0") newRow.scoreString = "K";
                 if (newRow.scoreString === "K") newRow.scoreString = "1";
                 else newRow.scoreString = String(newRow.scoreInt);
             }
-            
         }
 
         return rowArray.join(",");
