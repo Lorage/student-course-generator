@@ -9,7 +9,7 @@
 ### Use
 So far, the only code you need to start are these lines, passing the button ID, domain file input ID, and student file input ID.
 
-### JS
+#### JS
 ```
 import LearningPaths from './lib/learningPaths.js';
 
@@ -17,7 +17,7 @@ import LearningPaths from './lib/learningPaths.js';
 LearningPaths.registerHandlers('createPath', 'domainUpload', 'studentsUpload');
 ```
 
-### HTML
+#### HTML
 ```
 <div class="body-container">
     <div class="upload-container">
