@@ -144,7 +144,6 @@ class LearningPaths {
         // Create reference to domain headers in the form of:
         var studentHeader = this.parsedData.studentData[0];
         this.parsedData.studentData.forEach((item, index) => {
-            if (index === 0) return;
             allRows.push(this.composeRow(item, studentHeader));
         });
         
@@ -155,18 +154,20 @@ class LearningPaths {
     composeRow(rowArg, studentHeader) {
         var row = Object.assign({}, rowArg);
         var rowArray = [];
-        var objectArray = [];
         var differentials = {};
-        var sortedRow = row.scores.sort((a, b) => {
+
+        // Sort scores ascending
+        row.scores.sort((a, b) => {
             return a.scoreInt - b.scoreInt;
         });
+
         var lastElementIndex = this.parsedData.domainData.length - 1;
         var domainMaxLevel = parseInt(this.parsedData.domainData[lastElementIndex][0]);
-        var highestStudentLevel = sortedRow[sortedRow.length - 1].scoreInt;
+        var highestStudentLevel = row.scores[row.scores.length - 1].scoreInt;
         var diffArray = this.createDiffArray(domainMaxLevel);
 
         // Create differentials object
-        sortedRow.forEach(function(score, index) {
+        row.scores.forEach(function(score, index) {
             differentials[score.domain] = highestStudentLevel - score.scoreInt; 
         });
 
@@ -180,39 +181,6 @@ class LearningPaths {
             var currentDiff = {
                 diff: 0
             };
-/*             if (row.length === 1) {
-                var diffs = row.scores.filter((score) => {
-                    var diff = differentials[score.domain];
-                    if (diff > 1) return score;
-                });
-
-                if (diffs.length > 0) {
-                    diffs.forEach((diff) => {
-                        console.log(diff);
-                    });
-                }
-            } */
-
-            // After first score, check for scores of the same score and 
-/*             if (objectArray.length > 0) {
-                var lastElement = objectArray[objectArray.length - 1];
-                var array = row.scores.filter((score) => {
-                    if (score.scoreInt === lastElement.scoreInt) {
-                        return score;
-                    }
-                });
-
-                if (array.length > 0) {
-                    console.log("array", array);
-                    array.sort((scoreA, scoreB) => {
-                        return this.scoreMap[scoreA.scoreString].indexOf(scoreA.domain) - this.scoreMap[scoreB.scoreString].indexOf(scoreB.domain);
-                    });
-                }
-            } */
-
-            var newSort = row.scores.sort((scoreA, scoreB) => {
-                return differentials[scoreA.domain] - differentials[scoreB.domain];
-            });
 
             //Generate the diff array instead, based on max
             diffArray.forEach((prosDiff) => {
@@ -249,15 +217,8 @@ class LearningPaths {
             });
         }
 
-        // Option: only push score object instead of string, then sort before creating the string array
-
-        objectArray.forEach((currentCourse) => {
-            rowArray.push(`${currentCourse.scoreString}.${currentCourse.domain}`);
-        });
-
         return rowArray.join(",");
     }
-    // End under construction
 
     createDiffArray(domainMaxLevel) {
         var diffArray = [];
